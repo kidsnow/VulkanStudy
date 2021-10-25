@@ -15,16 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Sources\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VKApplication.cpp">
+    <ClCompile Include="Sources\VKApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="VKApplication.h">
+    <ClInclude Include="Sources\VKApplication.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Sources\shader\shader.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Sources\shader\shader.vert">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
