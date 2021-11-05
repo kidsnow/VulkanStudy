@@ -28,10 +28,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Sources\shader\shader.frag">
+    <None Include="Sources\shaders\shader.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="Sources\shader\shader.vert">
+    <None Include="Sources\shaders\shader.vert">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

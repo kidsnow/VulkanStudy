@@ -26,8 +26,8 @@
     <ClInclude Include="Sources\VKApplication.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Sources\shader\shader.frag" />
-    <None Include="Sources\shader\shader.vert" />
+    <None Include="Sources\shaders\shader.frag" />
+    <None Include="Sources\shaders\shader.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
