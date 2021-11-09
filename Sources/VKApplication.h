@@ -135,6 +135,9 @@ private:
 	void createDescriptorSets();
 	void updateUniformBuffer(uint32_t currentImage);
 
+	void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+	void createTextureImage();
+
 private:
 	int m_windowWidth, m_windowHeight;
 	GLFWwindow* m_window;
@@ -169,4 +172,6 @@ private:
 	std::vector<VkDeviceMemory> m_uniformBuffersMemory;
 	VkDescriptorPool m_descriptorPool;
 	std::vector<VkDescriptorSet> m_descriptorSets;
+	VkImage m_textureImage;
+	VkDeviceMemory m_textureImageMemory;
 };
