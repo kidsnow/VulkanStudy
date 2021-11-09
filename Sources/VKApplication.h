@@ -76,6 +76,11 @@ private:
 	void drawFrame();
 	void recreateSwapChain();
 
+	VkCommandBuffer beginSingleTimeCommands();
+	void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+
+	void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+
 	struct Vertex
 	{
 		glm::vec2 pos;
@@ -131,6 +136,7 @@ private:
 	void createIndexBuffer();
 	void createUniformBuffers();
 	void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+	void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
 	void createDescriptorPool();
 	void createDescriptorSets();
 	void updateUniformBuffer(uint32_t currentImage);
