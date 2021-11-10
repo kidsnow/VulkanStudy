@@ -143,6 +143,8 @@ private:
 
 	void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 	void createTextureImage();
+	void createTextureImageView();
+	VkImageView createImageView(VkImage image, VkFormat format);
 
 private:
 	int m_windowWidth, m_windowHeight;
@@ -180,4 +182,5 @@ private:
 	std::vector<VkDescriptorSet> m_descriptorSets;
 	VkImage m_textureImage;
 	VkDeviceMemory m_textureImageMemory;
+	VkImageView m_textureImageView;
 };
