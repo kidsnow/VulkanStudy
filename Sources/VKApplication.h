@@ -145,6 +145,7 @@ private:
 	void createTextureImage();
 	void createTextureImageView();
 	VkImageView createImageView(VkImage image, VkFormat format);
+	void createTextureSampler();
 
 private:
 	int m_windowWidth, m_windowHeight;
@@ -183,4 +184,5 @@ private:
 	VkImage m_textureImage;
 	VkDeviceMemory m_textureImageMemory;
 	VkImageView m_textureImageView;
+	VkSampler m_textureSampler;
 };
