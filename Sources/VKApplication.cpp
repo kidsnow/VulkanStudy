@@ -6,10 +6,14 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+
 #include <iostream>
 #include <set>
 #include <algorithm>
 #include <fstream>
+#include <unordered_map>
 
 const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation"
@@ -26,6 +30,9 @@ const bool enableValidationLayers = true;
 #endif
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
+
+const std::string MODEL_PATH = "Sources/models/viking_room.obj";
+const std::string TEXTURE_PATH = "Sources/textures/viking_room.png";
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 {
@@ -105,6 +112,7 @@ void VKApplication::initVulkan()
 	createTextureImage();
 	createTextureImageView();
 	createTextureSampler();
+	loadModel();
 	createVertexBuffer();
 	createIndexBuffer();
 	createUniformBuffers();
@@ -352,7 +360,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL VKApplication::debugCallback(VkDebugUtilsMessageS
 	return VK_FALSE;
 }
 
-VKApplication::QueueFamilyIndices VKApplication::findQueueFamilies(VkPhysicalDevice device)
+QueueFamilyIndices VKApplication::findQueueFamilies(VkPhysicalDevice device)
 {
 	QueueFamilyIndices indices;
 
@@ -503,7 +511,7 @@ void VKApplication::createLogicalDeivce()
 	vkGetDeviceQueue(m_device, indices.presentFamily.value(), 0, &m_presentQueue);
 }
 
-VKApplication::SwapChainSupportDetails VKApplication::querySwapChainSupport(VkPhysicalDevice device)
+SwapChainSupportDetails VKApplication::querySwapChainSupport(VkPhysicalDevice device)
 {
 	SwapChainSupportDetails details;
 
@@ -1014,7 +1022,7 @@ void VKApplication::createCommandBuffers()
 			VkDeviceSize offsets[] = { 0 };
 			vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
-			vkCmdBindIndexBuffer(m_commandBuffers[i], m_indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+			vkCmdBindIndexBuffer(m_commandBuffers[i], m_indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 			vkCmdBindDescriptorSets(m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineLayout, 0, 1, &m_descriptorSets[i], 0, nullptr);
 
 			vkCmdDrawIndexed(m_commandBuffers[i], static_cast<uint32_t>(m_indices.size()), 1, 0, 0, 0);
@@ -1315,7 +1323,7 @@ void VKApplication::createImage(uint32_t width, uint32_t height, VkFormat format
 void VKApplication::createTextureImage()
 {
 	int texWidth, texHeight, texChannels;
-	stbi_uc* pixels = stbi_load("Sources/textures/texture.jpg", &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+	stbi_uc* pixels = stbi_load(TEXTURE_PATH.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 	VkDeviceSize imageSize = texWidth * texHeight * 4;
 
 	if (pixels == nullptr)
@@ -1553,6 +1561,50 @@ VkFormat VKApplication::findSupportedFormat(const std::vector<VkFormat>& candida
 	}
 
 	throw std::runtime_error("failed to find supported format!");
+}
+
+void VKApplication::loadModel()
+{
+	tinyobj::attrib_t attrib;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+	std::string warn, err;
+
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str()))
+	{
+		throw std::runtime_error(warn + err);
+	}
+
+	std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+
+	for (const auto& shape : shapes)
+	{
+		for (const auto& index : shape.mesh.indices)
+		{
+			Vertex vertex{};
+
+			vertex.pos = {
+				attrib.vertices[3 * index.vertex_index + 0],
+				attrib.vertices[3 * index.vertex_index + 1],
+				attrib.vertices[3 * index.vertex_index + 2]
+			};
+
+			vertex.texCoord = {
+				attrib.texcoords[2 * index.texcoord_index + 0],
+				1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+			};
+
+			vertex.color = { 1.0f, 1.0f, 1.0f };
+
+			if (uniqueVertices.count(vertex) == 0)
+			{
+				uniqueVertices[vertex] = static_cast<uint32_t>(m_vertices.size());
+				m_vertices.push_back(vertex);
+			}
+
+			m_indices.push_back(uniqueVertices[vertex]);
+		}
+	}
 }
 
 void VKApplication::drawFrame()
